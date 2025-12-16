@@ -16,7 +16,7 @@ def top_steals(df: pd.DataFrame, n: int = 20) -> pd.DataFrame:
     their draft position's expected value.
     """
     cols = ["player", "draft_year", "pick", "pick_tier", "team",
-            "win_shares", "VORP", "value_score", "expected_value",
+            "VORP", "VORP", "value_score", "expected_value",
             "value_over_expected"]
     available = [c for c in cols if c in df.columns]
     return (
@@ -33,7 +33,7 @@ def top_busts(df: pd.DataFrame, n: int = 20) -> pd.DataFrame:
     Focus on picks 1-20 (busts only matter when high capital was spent).
     """
     cols = ["player", "draft_year", "pick", "pick_tier", "team",
-            "win_shares", "VORP", "value_score", "expected_value",
+            "VORP", "VORP", "value_score", "expected_value",
             "value_over_expected"]
     available = [c for c in cols if c in df.columns]
     bust_df = df[df["pick"] <= 20]
@@ -52,7 +52,7 @@ def value_by_pick_tier(df: pd.DataFrame) -> pd.DataFrame:
         df.groupby("pick_tier")
         .agg(
             n_picks          = ("player", "count"),
-            median_ws        = ("win_shares", "median"),
+            median_ws        = ("VORP", "median"),
             median_vorp      = ("VORP", "median"),
             median_value     = ("value_score", "median"),
             pct_busts        = ("is_bust", "mean"),
@@ -73,9 +73,9 @@ def value_by_era(df: pd.DataFrame) -> pd.DataFrame:
         df.groupby("era", observed=True)
         .agg(
             n_picks        = ("player", "count"),
-            median_ws      = ("win_shares", "median"),
+            median_ws      = ("VORP", "median"),
             median_vorp    = ("VORP", "median"),
-            pct_zero_ws    = ("win_shares", lambda x: (x == 0).mean() * 100),
+            pct_zero_ws    = ("VORP", lambda x: (x == 0).mean() * 100),
         )
         .round(2)
         .reset_index()
@@ -90,7 +90,7 @@ def pick_value_curve(df: pd.DataFrame) -> pd.DataFrame:
     return (
         df.groupby("pick")
         .agg(
-            median_ws    = ("win_shares", "median"),
+            median_ws    = ("VORP", "median"),
             median_value = ("value_score", "median"),
             n            = ("player", "count"),
         )
@@ -101,12 +101,11 @@ def pick_value_curve(df: pd.DataFrame) -> pd.DataFrame:
 
 def second_round_steals(df: pd.DataFrame, n: int = 15) -> pd.DataFrame:
     """Best second-round picks — the ultimate draft steals."""
-    cols = ["player", "draft_year", "pick", "team",
-            "win_shares", "VORP", "value_score", "value_over_expected"]
+    cols = ["player", "draft_year", "pick", "team", "VORP", "value_score", "value_over_expected"]
     available = [c for c in cols if c in df.columns]
     return (
         df[df["round"] == 2][available]
-        .sort_values("win_shares", ascending=False)
+        .sort_values("VORP", ascending=False)
         .head(n)
         .reset_index(drop=True)
     )

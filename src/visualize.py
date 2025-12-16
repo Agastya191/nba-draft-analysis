@@ -163,10 +163,10 @@ def plot_second_round_steals(sr_df: pd.DataFrame) -> str:
     sr_df["label"] = sr_df["player"] + "\n(#" + sr_df["pick"].astype(str) + ", " + sr_df["draft_year"].astype(str) + ")"
 
     fig, ax = plt.subplots(figsize=(11, 5))
-    bars = ax.bar(sr_df["label"], sr_df["win_shares"],
+    bars = ax.bar(sr_df["label"], sr_df["VORP"],
                   color=NBA_BLUE, edgecolor="white")
 
-    for bar, val in zip(bars, sr_df["win_shares"]):
+    for bar, val in zip(bars, sr_df["VORP"]):
         ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.5,
                 f"{val:.0f}", ha="center", fontsize=9)
 

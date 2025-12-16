@@ -29,9 +29,9 @@ def train_baseline_model(df: pd.DataFrame) -> dict:
 
     Returns dict with model, predictions, and evaluation metrics.
     """
-    sub = df[["pick", "win_shares"]].dropna()
+    sub = df[["pick", "VORP"]].dropna()
     X = sub[["pick"]].values
-    y = sub["win_shares"].values
+    y = sub["VORP"].values
 
     pipe = Pipeline([
         ("poly", PolynomialFeatures(degree=2, include_bias=False)),

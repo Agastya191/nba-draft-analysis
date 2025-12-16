@@ -45,7 +45,7 @@ def compute_value_score(df: pd.DataFrame) -> pd.Series:
     Score = 0.6 * WS + 0.4 * (VORP * 3)
     VORP is scaled by 3 to roughly match WS magnitude.
     """
-    ws   = df["win_shares"].fillna(0)
+    ws   = df["VORP"].fillna(0) * 3  # using VORP as proxy
     vorp = df["VORP"].fillna(0) * 3
     return (0.6 * ws + 0.4 * vorp).round(2)
 
@@ -119,7 +119,7 @@ def clean_and_engineer(df: pd.DataFrame) -> pd.DataFrame:
     df["pick"] = df["pick"].astype(int)
 
     # Fill missing stats with 0
-    for col in ["win_shares", "VORP", "PER", "games", "years_active"]:
+    for col in ["VORP", "years_active"]:
         if col in df.columns:
             df[col] = df[col].fillna(0)
 
