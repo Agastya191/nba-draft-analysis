@@ -139,6 +139,12 @@ def scrape_all_drafts(start: int = 2000, end: int = 2020,
         except Exception as e:
             print(f"    {year}: ERROR — {e}")
 
+    if not frames:
+        raise RuntimeError(
+            "No draft pages could be downloaded. Basketball Reference often blocks "
+            "cloud servers like Google Colab (403 Forbidden); run the scraper on your "
+            "own computer, or use the data/draft_data_raw.csv snapshot in the repo."
+        )
     combined = pd.concat(frames, ignore_index=True)
     os.makedirs(os.path.dirname(save_path) or ".", exist_ok=True)
     combined.to_csv(save_path, index=False, encoding="utf-8")

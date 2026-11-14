@@ -23,7 +23,7 @@ def _save(fig, name):
     path = os.path.join(OUTPUT_DIR, f"{name}.png")
     fig.savefig(path, dpi=150, bbox_inches="tight")
     plt.close(fig)
-    print(f"  Saved: {path}")
+    print(f"  Saved: outputs/{name}.png")
     return path
 
 
@@ -47,7 +47,7 @@ def plot_pick_value_curve(curve_df: pd.DataFrame,
     ax.scatter(curve_df["pick"], curve_df["median_ws"],
                color=NBA_BLUE, alpha=0.6, s=40, label="Actual median WS")
     ax.plot(baseline["pick_range"], baseline["expected_ws"],
-            color=NBA_RED, linewidth=2.5, label="Model predicted WS")
+            color=NBA_RED, linewidth=2.5, label="Model prediction (average WS)")
 
     ax.axvline(30, color="gray", linestyle="--", alpha=0.5, label="Round 1 / Round 2")
     ax.set_xlabel("Draft Pick Number", fontsize=12)

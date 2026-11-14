@@ -1,4 +1,5 @@
 data/*.csv
+!data/draft_data_raw.csv
 __pycache__/
 *.py[cod]
 .env
