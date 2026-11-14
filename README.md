@@ -1,6 +1,8 @@
 # NBA Draft Value Analysis (2000–2020)
 ### Who Were the Biggest Steals and Busts?
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Agastya191/nba-draft-analysis/blob/main/notebooks/analysis.ipynb)
+
 A data science project analyzing 21 years of NBA draft data to quantify which players over and under performed their draft position, which teams draft best, and whether career value can be predicted from draft slot alone.
 
 ---
@@ -19,7 +21,7 @@ A data science project analyzing 21 years of NBA draft data to quantify which pl
 
 **Source:** Basketball Reference (scraped via `requests` + `BeautifulSoup`)  
 **Coverage:** NBA Drafts 2000–2020 (~1,300 picks)  
-**Key stats:** Win Shares (WS), VORP, PER, Games Played
+**Key stats:** Win Shares (WS), VORP, Box Plus/Minus (BPM), Games Played
 
 **Value Metric:** Composite score = `0.6 × WS + 0.4 × (VORP × 3)`  
 Combines the two most respected cumulative NBA value metrics.
@@ -35,25 +37,23 @@ Combines the two most respected cumulative NBA value metrics.
 | Value Over Expected (VOE) | Actual − expected → identifies steals and busts |
 | Polynomial regression | Predict WS from pick number (baseline model) |
 | Gradient Boosting | Predict value from pick + era + round (improved model) |
-| Team efficiency ranking | Avg VOE per pick per franchise |
+| Team efficiency ranking | Avg VOE per pick per franchise (relocated/renamed teams merged, e.g. SEA → OKC, NJN → BRK) |
 
 ---
 
 ## Setup & Usage
 
+**In the browser (no setup):** click the Colab badge above, then `Runtime → Run all`. The notebook downloads the code and scrapes the data itself (about 2 minutes).
+
+**Locally:**
 ```bash
-# 1. Clone
 git clone https://github.com/Agastya191/nba-draft-analysis.git
 cd nba-draft-analysis
-
-# 2. Install dependencies
 pip install -r requirements.txt
-
-# 3. Run the notebook (scraping happens automatically)
 jupyter notebook notebooks/analysis.ipynb
 ```
 
-> **Note:** First run scrapes ~21 pages from Basketball Reference with a 4-second rate limit (~5 minutes). Subsequent runs load from the cached CSV.
+> **Note:** The first run scrapes 21 pages from Basketball Reference with a 4-second delay between requests. Later runs load the cached CSV in `data/`.
 
 ---
 
@@ -68,6 +68,13 @@ jupyter notebook notebooks/analysis.ipynb
 | 5 | Best second-round picks of the era |
 | 6 | Draft quality comparison by era |
 | 7 | Team drafting efficiency ranking |
+
+---
+
+## Limitations
+
+- Win Shares and VORP are career totals, so players drafted recently (especially 2016–2020) have had fewer seasons to accumulate value. Their picks can look like busts partly because their careers aren't finished.
+- Players who never appeared in an NBA game are counted as 0 Win Shares and 0 VORP.
 
 ---
 

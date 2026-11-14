@@ -35,6 +35,19 @@ def assign_round(pick: int) -> int:
     return 1 if pick <= 30 else 2
 
 
+# Older team codes mapped to the franchise's current code, so a team that moved
+# or was renamed is ranked as one franchise (e.g. Seattle's picks count for OKC).
+# Charlotte follows the NBA's official record: the original Hornets (CHH) history
+# belongs to today's Charlotte Hornets (CHO), and the New Orleans codes to the Pelicans.
+FRANCHISE_MAP = {
+    "SEA": "OKC",
+    "NJN": "BRK",
+    "VAN": "MEM",
+    "NOH": "NOP", "NOK": "NOP",
+    "CHA": "CHO", "CHH": "CHO",
+}
+
+
 # ── Composite value score ─────────────────────────────────────────────────────
 
 def compute_value_score(df: pd.DataFrame) -> pd.Series:
@@ -45,7 +58,7 @@ def compute_value_score(df: pd.DataFrame) -> pd.Series:
     Score = 0.6 * WS + 0.4 * (VORP * 3)
     VORP is scaled by 3 to roughly match WS magnitude.
     """
-    ws   = df["VORP"].fillna(0) * 3  # using VORP as proxy
+    ws   = df["win_shares"].fillna(0)
     vorp = df["VORP"].fillna(0) * 3
     return (0.6 * ws + 0.4 * vorp).round(2)
 
@@ -111,7 +124,7 @@ def clean_and_engineer(df: pd.DataFrame) -> pd.DataFrame:
     df = df[~df["player"].str.contains("Player|Round", na=False)]
 
     # Ensure numeric types
-    for col in ["pick", "games", "win_shares", "VORP", "PER"]:
+    for col in ["pick", "games", "win_shares", "VORP"]:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
 
@@ -119,9 +132,13 @@ def clean_and_engineer(df: pd.DataFrame) -> pd.DataFrame:
     df["pick"] = df["pick"].astype(int)
 
     # Fill missing stats with 0
-    for col in ["VORP", "years_active"]:
+    for col in ["win_shares", "VORP", "games", "years_active"]:
         if col in df.columns:
             df[col] = df[col].fillna(0)
+
+    # Count each franchise as one team across relocations and renames
+    if "team" in df.columns:
+        df["team"] = df["team"].replace(FRANCHISE_MAP)
 
     # Feature engineering
     df["pick_tier"]  = df["pick"].apply(assign_pick_tier)

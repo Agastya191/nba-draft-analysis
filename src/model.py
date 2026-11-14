@@ -29,9 +29,9 @@ def train_baseline_model(df: pd.DataFrame) -> dict:
 
     Returns dict with model, predictions, and evaluation metrics.
     """
-    sub = df[["pick", "VORP"]].dropna()
+    sub = df[["pick", "win_shares"]].dropna()
     X = sub[["pick"]].values
-    y = sub["VORP"].values
+    y = sub["win_shares"].values
 
     pipe = Pipeline([
         ("poly", PolynomialFeatures(degree=2, include_bias=False)),
@@ -158,7 +158,7 @@ def run_models(df: pd.DataFrame) -> dict:
     teams    = team_draft_efficiency(df)
 
     print(f"  Baseline model  — CV MAE: {baseline['cv_mae']} WS | R²: {baseline['cv_r2']}")
-    print(f"  Improved model  — CV MAE: {improved['cv_mae']} VS | R²: {improved['cv_r2']}")
+    print(f"  Improved model  — CV MAE: {improved['cv_mae']} value pts | R²: {improved['cv_r2']}")
     print(f"  Team efficiency — {len(teams)} teams ranked")
 
     return {
